@@ -59,6 +59,8 @@ public class WebSecurity {
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("**").permitAll()
                                 .anyRequest().authenticated()
                 );
 
