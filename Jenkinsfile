@@ -6,7 +6,7 @@ pipeline {
         REMOTE_USER = 'mohcineboudenjal'
         REMOTE_HOST = 'production-server'
         REMOTE_PATH = '/home/mohcineboudenjal/smartassurance/prod'
-        JENKINS_HOME = '/home/jenkins'
+        JENKINS_HOME = '/var/lib/jenkins'
         JAR_NAME = 'microservice-authentication'  // Replace with your actual jar name
     }
 
