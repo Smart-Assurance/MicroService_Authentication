@@ -13,11 +13,14 @@ pipeline {
          stage('Connect SSH to remote and create directory of jar file with dockerfile') {
         steps {
             script {
-                // Connect to the production server using SSH and use sed for variable substitution
+                // Connect to the production server using SSH
                 sh """
                     ssh -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
                         mkdir -p ${REMOTE_PATH}/${JAR_NAME} &&
-                        sed 's|\$JAR_FILE|${JAR_NAME}-0.0.1-SNAPSHOT.jar|' ${REMOTE_PATH}/Dockerfile.template > ${REMOTE_PATH}/${JAR_NAME}/Dockerfile
+                        ssh -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
+                            cd ${REMOTE_PATH}/${JAR_NAME} &&
+                            ../generate_dockerfile.sh ${JAR_NAME}-0.0.1-SNAPSHOT.jar
+                        '
                     "
                 """
             }
