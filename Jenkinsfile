@@ -18,6 +18,7 @@ pipeline {
                     ssh -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
                         mkdir -p ${REMOTE_PATH}/${JAR_NAME} &&
                             cd ${REMOTE_PATH}/${JAR_NAME} &&
+                            chmod +x ../generate_dockerfile.sh &&
                             ../generate_dockerfile.sh ${JAR_NAME}-0.0.1-SNAPSHOT.jar
                         
                     "
