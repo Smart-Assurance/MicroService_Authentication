@@ -6,26 +6,35 @@ pipeline {
         REMOTE_USER = 'mohcineboudenjal'
         REMOTE_HOST = 'production-server'
         REMOTE_PATH = '/home/mohcineboudenjal/smartassurance/prod'
+        JENKINS_HOME = '/home/mohcineboudenjal'
         JAR_NAME = 'microservice-authentication'  // Replace with your actual jar name
     }
 
     stages {
-         stage('Connect SSH to remote and create directory of jar file with dockerfile') {
+      stage('Connect SSH to remote and create directory of jar file with dockerfile') {
         steps {
             script {
-                // Connect to the production server using SSH
+                // Connect to the production server using SSH, create directory, and copy generate_dockerfile.sh
                 sh """
                     ssh -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
                         mkdir -p ${REMOTE_PATH}/${JAR_NAME} &&
-                            cp ${REMOTE_PATH}/generate_dockerfile.sh ${REMOTE_PATH}/${JAR_NAME} &&
-                            cd ${REMOTE_PATH}/${JAR_NAME} &&
-                            chmod +x generate_dockerfile.sh &&
-                            ./generate_dockerfile.sh ${JAR_NAME}-0.0.1-SNAPSHOT.jar
+                        cd ${REMOTE_PATH}/${JAR_NAME} &&
+                        scp -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${JENKINS_HOME}/generate_dockerfile.sh ./
+                    "
+                    
+                    # Connect again to execute the script
+                    ssh -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
+                        cd ${REMOTE_PATH}/${JAR_NAME} &&
+                        chmod +x generate_dockerfile.sh &&
+                        ./generate_dockerfile.sh ${JAR_NAME}-0.0.1-SNAPSHOT.jar &&
+                        rm generate_dockerfile.sh
                     "
                 """
             }
         }
     }
+
+
 
         stage('Build and Copy JAR file into directory') {
             steps {
