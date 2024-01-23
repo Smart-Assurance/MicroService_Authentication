@@ -11,25 +11,39 @@ pipeline {
     }
 
     stages {
-     stage('Connect SSH to remote and create directory of jar file with dockerfile') {
-    steps {
-        script {
-            // Connect to the production server using SSH, create directory, and copy generate_dockerfile.sh
-            sh "scp -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${JENKINS_HOME}/generate_dockerfile.sh ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/${JAR_NAME}/"
-
-            // Connect again to execute the script
-            sh """
-                ssh -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
-                    cd ${REMOTE_PATH}/${JAR_NAME} &&
-                    chmod +x generate_dockerfile.sh &&
-                    ./generate_dockerfile.sh ${JAR_NAME}-0.0.1-SNAPSHOT.jar &&
-                    rm generate_dockerfile.sh
-                "
-            """
+    stage('Generate Dockerfile on Jenkins') {
+        steps {
+            script {
+                // Run the script to generate Dockerfile locally
+                sh """
+                    cd ${JENKINS_HOME}
+                    ./generate_dockerfile.sh ${JAR_NAME}-0.0.1-SNAPSHOT.jar
+                """
+            }
         }
     }
-}
 
+    stage('Connect SSH to Remote and Create Directory') {
+        steps {
+            script {
+                // Connect to the remote server and create the directory
+                sh """
+                    ssh -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
+                        mkdir -p ${REMOTE_PATH}/${JAR_NAME}
+                    "
+                """
+            }
+        }
+    }
+    
+    stage('Copy Dockerfile to Remote Server') {
+        steps {
+            script {
+                // Copy the generated Dockerfile to the remote server
+                sh "scp -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${JENKINS_HOME}/Dockerfile ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/${JAR_NAME}/"
+            }
+        }
+    }
 
 
 
