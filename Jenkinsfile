@@ -17,7 +17,7 @@ pipeline {
                 // Run the script to generate Dockerfile locally
                 sh """
                     cd ${JENKINS_HOME}
-                    ./generate_dockerfile.sh ${JAR_NAME}-0.0.1-SNAPSHOT.jar
+                    ./generate_dockerfile.sh ${JAR_NAME}
                 """
             }
         }
