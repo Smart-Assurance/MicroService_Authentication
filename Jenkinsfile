@@ -15,7 +15,7 @@ pipeline {
     steps {
         script {
             // Connect to the production server using SSH, create directory, and copy generate_dockerfile.sh
-            sh "scp -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${JENKINS_HOME}/generate_dockerfile.sh ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/${JAR_NAME}/ && chmod +x ${REMOTE_PATH}/${JAR_NAME}/generate_dockerfile.sh"
+            sh "scp -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${JENKINS_HOME}/generate_dockerfile.sh ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/${JAR_NAME}/"
 
             // Connect again to execute the script
             sh """
