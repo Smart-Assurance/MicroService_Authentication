@@ -11,30 +11,25 @@ pipeline {
     }
 
     stages {
-      stage('Connect SSH to remote and create directory of jar file with dockerfile') {
-        steps {
-            script {
-                // Connect to the production server using SSH, create directory, and copy generate_dockerfile.sh
+     stage('Connect SSH to remote and create directory of jar file with dockerfile') {
+    steps {
+        script {
+            // Connect to the production server using SSH, create directory, and copy generate_dockerfile.sh
+            sh "scp -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${JENKINS_HOME}/generate_dockerfile.sh ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/${JAR_NAME}/ && chmod +x ${REMOTE_PATH}/${JAR_NAME}/generate_dockerfile.sh"
 
-                sh "scp -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${JENKINS_HOME}/generate_dockerfile.sh ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/${JAR_NAME} && chmod +x ${REMOTE_PATH}/${JAR_NAME}/generate_dockerfile.sh"
-
-                sh """
-                    ssh -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
-                        mkdir -p ${REMOTE_PATH}/${JAR_NAME} &&
-                        cd ${REMOTE_PATH}/${JAR_NAME}
-                    "
-                    
-                    # Connect again to execute the script
-                    ssh -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
-                        cd ${REMOTE_PATH}/${JAR_NAME} &&
-                        chmod +x generate_dockerfile.sh &&
-                        ./generate_dockerfile.sh ${JAR_NAME}-0.0.1-SNAPSHOT.jar &&
-                        rm generate_dockerfile.sh
-                    "
-                """
-            }
+            // Connect again to execute the script
+            sh """
+                ssh -i ${JENKINS_SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
+                    cd ${REMOTE_PATH}/${JAR_NAME} &&
+                    chmod +x generate_dockerfile.sh &&
+                    ./generate_dockerfile.sh ${JAR_NAME}-0.0.1-SNAPSHOT.jar &&
+                    rm generate_dockerfile.sh
+                "
+            """
         }
     }
+}
+
 
 
 
