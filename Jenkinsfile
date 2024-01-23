@@ -20,7 +20,7 @@ pipeline {
                             cp ${REMOTE_PATH}/generate_dockerfile.sh ${REMOTE_PATH}/${JAR_NAME} &&
                             cd ${REMOTE_PATH}/${JAR_NAME} &&
                             chmod +x generate_dockerfile.sh &&
-                            generate_dockerfile.sh ${JAR_NAME}-0.0.1-SNAPSHOT.jar
+                            ./generate_dockerfile.sh ${JAR_NAME}-0.0.1-SNAPSHOT.jar
                     "
                 """
             }
