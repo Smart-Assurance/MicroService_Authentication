@@ -87,11 +87,11 @@ public class AuthController {
 
         String token = tokenValidationRequest.getToken();
         if (jwtUtils.validateJwtToken(token)){
-            Claims claims = jwtUtils.getRolesFromJwtToken(token);
+            Claims claims = jwtUtils.getRolesFromJwtToken(token); // {id=***,role:authority={ROLE_***}
             Map<String, Object> roleMap = (Map<String, Object>) claims.get("role");
             // Extract roles from claims
             String roleAuthority = (String) roleMap.get("authority");
-
+            //ROLE_***
             TokenValidationResponse response;
             if(roleAuthority.equals("ROLE_ADMIN"))
                 response = new TokenValidationResponse("administrator");
